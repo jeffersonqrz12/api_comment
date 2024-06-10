@@ -1,5 +1,5 @@
 IaC - Infraestructure as Code
-🚧  Deploy de um api  na AWS com Terraform 🚀 Em andamento  🚧
+🚧  Deploy de um api  na AWS com Terraform
 
 💻 Sobre o projeto
 Provisionar uma infraestrutura na AWS com Terraform
@@ -24,7 +24,6 @@ $ cd api_comment
 
 🚀 Deploy
 
-$ terraform --version
 
 # init
 $ terraform init
