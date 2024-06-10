@@ -16,7 +16,23 @@ Git e Terraform
 
 🎲 Instalação
 # Clone este repositório
-$ git clone https://github.com/alangiovanni/deploy-observability-terraform-aws.git
+https://github.com/jeffersonqrz12/api_comment.git
 
 # Acesse a pasta do projeto no terminal/cmd
-$ cd deploy-observability-terraform-aws
+$ cd api_comment
+
+
+🚀 Deploy
+
+$ terraform --version
+
+# init
+$ terraform init
+
+# Plan
+$ terraform plan
+
+# Apply com confirmação
+$ terraform apply --auto-approve
+
+# Obs: Os recursos serão provisionados em us-east-1
