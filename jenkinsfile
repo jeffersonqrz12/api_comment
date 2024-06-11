@@ -1,0 +1,47 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Checkout') {
+            steps {
+                git 'https://github.com/jeffersonqrz12/api_comment.git'
+            }
+        }
+
+        stage('Terraform Init') {
+            steps {
+                script {
+                    sh 'terraform init'
+                }
+            }
+        }
+
+        stage('Terraform Plan') {
+            steps {
+                script {
+                    sh 'terraform plan'
+                }
+            }
+        }
+
+        stage('Terraform Apply') {
+            steps {
+                script {
+                    sh 'terraform apply -auto-approve'
+                }
+            }
+        }
+
+post {
+    always {
+        // Arquivar os relatórios ou logs gerados
+        archiveArtifacts artifacts: 'terraform.tfstate', allowEmptyArchive: true
+        }
+    success {
+        echo 'Pipeline executado com sucesso.'
+        }
+    failure {
+        echo 'Pipeline falhou.'
+        }
+    }
+}
