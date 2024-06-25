@@ -32,7 +32,7 @@ resource "aws_key_pair" "kp" {
   public_key = tls_private_key.pk.public_key_openssh
 
   provisioner "local-exec" { # envia a chave .pem para a sua instancia
-    command = "echo '${tls_private_key.pk.private_key_pem}' > $PWD/myKey.pem"
+    command = "echo '${tls_private_key.pk.private_key_pem}' > ./myKey.pem"
   }
 }
 
