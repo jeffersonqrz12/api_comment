@@ -1,0 +1,20 @@
+stages:
+  - plan
+  - apply
+
+variables:
+  AWS_ACCESS_KEY_ID: "<seu-access-key>"
+  AWS_SECRET_ACCESS_KEY: "<seu-secret-key>"
+  AWS_DEFAULT_REGION: "us-east-1"
+
+terraform:
+  stage: apply
+  image: hashicorp/terraform:latest
+  script:
+    - terraform init
+    - terraform plan -out=tfplan -input=false
+    - terraform apply -input=false tfplan
+  environment:
+    name: production
+  only:
+    - master  # Executar somente na branch master (ou em qualquer outra branch que você preferir)
