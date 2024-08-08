@@ -5,7 +5,7 @@ variable "aws_region" {
 
 variable "app_image" {
   description = "Docker image URL"
-  default     = "your-account-id.dkr.ecr.your-region.amazonaws.com/:latest"
+  default     = "*****.dkr.ecr.your-region.amazonaws.com/:latest"
 }
 
 variable "ecs_cluster_name" {
