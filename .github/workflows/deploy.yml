@@ -15,18 +15,14 @@ jobs:
 
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v2
-    
 
-    - name: Login to Amazon ECR
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v2
-        with:
-          mask-password: 'false'
+    - name: Log in to Amazon ECR
+      uses: aws-actions/amazon-ecr-login@v1
 
     - name: Build Docker image
       run: |
-        docker build -t api-comment .
-        docker tag api:latest ${{ secrets.ECR_REPOSITORY }}:latest
+        docker build -t myapp .
+        docker tag myapp:latest ${{ secrets.ECR_REPOSITORY }}:latest
 
     - name: Push Docker image
       run: |
