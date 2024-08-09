@@ -15,6 +15,7 @@ jobs:
 
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v2
+      
     - name: Set up AWS CLI
       run: |
         aws configure set aws_region ${{ secrets.AWS_REGION }}
