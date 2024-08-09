@@ -32,8 +32,8 @@ resource "aws_security_group" "securityapi" {
   }
 }
 
-resource "aws_ecr_repository" "api-comment" {
-name = "api-comment"
+resource "aws_ecr_repository" "repo-comment" {
+name = var.ecr_repository_name
 
 #Application Load Balancer (ALB)
 resource "aws_lb" "api_alb" {
@@ -80,6 +80,11 @@ resource "aws_lb_target_group" "api_target_group" {
   }
 }
 
+resource "aws_ecs_cluster" 'apicomment-cluster" {
+  name = var.ecs_cluster_name
+}
+
+
 
 resource "aws_ecs_task_definition" "apicomment.task" {
   family                = "apicomment-task"
@@ -91,7 +96,7 @@ resource "aws_ecs_task_definition" "apicomment.task" {
   container_definitions = jsonencode([
     {
       name      = "apicomment-container"
-      image     = "${aws_ecr_repository.api-comment.repository_url}:latest"  
+      image     = "${aws_ecr_repository.repo-comment.repository_url}:latest"  
       cpu       = 256
       memory    = 512
       essential = true
@@ -115,7 +120,7 @@ resource "aws_ecs_task_definition" "apicomment.task" {
 }
 
 
-resource "aws_ecs_service" "apicomment" {
+resource "aws_ecs_service" "apicomment-serv" {
   name            = var.ecs_service_name
   cluster         = aws_ecs_cluster.api_comment-cluster.id
   task_definition = aws_ecs_task_definition.api-comment-task.arn
