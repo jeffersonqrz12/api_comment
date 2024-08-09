@@ -129,7 +129,7 @@ resource "aws_ecs_service" "apicomment" {
   }
 
   load_balancer {
-    target_group_arn = aws_lb_target_group.myapp_target_group.arn
+    target_group_arn = aws_lb_target_group.api_target_group.arn
     container_name   = "api-comment"
     container_port   = 3000
   }
