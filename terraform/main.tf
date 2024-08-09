@@ -32,6 +32,9 @@ resource "aws_security_group" "securityapi" {
   }
 }
 
+resource "aws_ecr_repository" "api-comment" {
+name = "api-comment"
+
 #Application Load Balancer (ALB)
 resource "aws_lb" "api_alb" {
   name               = "api-alb"
