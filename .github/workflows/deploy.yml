@@ -3,8 +3,10 @@ name: Build and Deploy Docker Image
 on:
   push:
     branches:
-      - main  # Ou a branch que você deseja usar para deploys automáticos
-
+      - main  
+env:
+  AWS_REGION: us-east-1
+  
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
