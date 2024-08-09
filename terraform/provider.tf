@@ -1,3 +1,3 @@
 provider "aws" {
-  region = "us-west-2"  # região da cloud
+  region = "us-east-1"  # região da cloud
 }
