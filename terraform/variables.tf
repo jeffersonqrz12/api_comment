@@ -3,13 +3,9 @@ variable "aws_region" {
   default     = "us-east-1"
 }
 
-data "aws_ecr_repository" "app_repo" {
-  name = "api.comment"  
-}
-
-output "app_image_url" {
-  value = "${data.aws_ecr_repository.app_repo.repository_url}:latest"
-}
+variable "app_image" {
+  description = "Docker image URL"
+  default     = "*****.dkr.ecr.your-region.amazonaws.com/api_comment:latest"
 
 
 variable "ecs_cluster_name" {
