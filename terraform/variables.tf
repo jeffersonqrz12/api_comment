@@ -20,5 +20,5 @@ variable "ecs_service_name" {
 
 variable "ecr_repository_name" {
   description = "ECR repository name"
-  default     = "api.comment"
+  default     = "api-comment"
 }
