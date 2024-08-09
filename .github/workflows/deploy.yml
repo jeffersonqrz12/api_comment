@@ -1,0 +1,37 @@
+name: Build and Deploy Docker Image
+
+on:
+  push:
+    branches:
+      - main  # Ou a branch que você deseja usar para deploys automáticos
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
+
+    - name: Log in to Amazon ECR
+      uses: aws-actions/amazon-ecr-login@v1
+
+    - name: Build Docker image
+      run: |
+        docker build -t api-comment .
+        docker tag api:latest ${{ secrets.ECR_REPOSITORY }}:latest
+
+    - name: Push Docker image
+      run: |
+        docker push ${{ secrets.ECR_REPOSITORY }}:latest
+
+    - name: Update ECS service
+      run: |
+        aws ecs update-service \
+          --cluster ${{ secrets.ECS_CLUSTER_NAME }} \
+          --service ${{ secrets.ECS_SERVICE_NAME }} \
+          --force-new-deployment \
+          --task-definition ${{ secrets.ECS_TASK_DEFINITION }}
