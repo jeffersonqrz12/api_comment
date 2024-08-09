@@ -4,8 +4,8 @@ services:
   - docker:dind
 
 variables:
-  AWS_DEFAULT_REGION: "us-west-2"  # Substitua pela sua região
-  ECR_REPOSITORY_URI: "*****.dkr.ecr.your-region.amazonaws.com/:latest"
+  AWS_DEFAULT_REGION: "us-east-1"  
+  ECR_REPOSITORY_URI: "927434171806.dkr.ecr.us-east-1.amazonaws.com/api.comment"
 
 stages:
   - build
