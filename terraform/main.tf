@@ -90,8 +90,8 @@ resource "aws_ecs_task_definition" "apicomment.task" {
 
   container_definitions = jsonencode([
     {
-      name      = "apicomment
-      image     = var.app_image
+      name      = "apicomment-container"
+      image     = "${aws_ecr_repository.api-comment.repository_url}:latest"  
       cpu       = 256
       memory    = 512
       essential = true
@@ -111,7 +111,7 @@ resource "aws_ecs_task_definition" "apicomment.task" {
         }
       }
     }
-  ])
+  ]
 }
 
 
