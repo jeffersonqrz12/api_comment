@@ -161,6 +161,8 @@ resource "aws_lb_target_group" "api_target_group" {
   protocol = "HTTP"
   vpc_id   = aws_vpc.apivpc.id
 
+target_type = "ip"
+
   health_check {
     path                = "/"
     interval            = 30
