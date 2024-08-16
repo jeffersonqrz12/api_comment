@@ -1,16 +1,20 @@
-# Criar VPC
-resource "aws_vpc" "main" {
+provider "aws" {
+  region = "us-east-1"
+}
+
+# Criar uma VPC
+resource "aws_vpc" "apivpc" {
   cidr_block = "10.0.0.0/16"
   enable_dns_support = true
   enable_dns_hostnames = true
   tags = {
-    Name = "main-vpc"
+    Name = "my-vpc"
   }
 }
 
-# Subnets públicas
-resource "aws_subnet" "public_a" {
-  vpc_id                  = aws_vpc.main.id
+# Subnet pública na zona us-east-1a
+resource "aws_subnet" "apisub_publica" {
+  vpc_id                  = aws_vpc.apivpc.id
   cidr_block              = "10.0.1.0/24"
   availability_zone       = "us-east-1a"
   map_public_ip_on_launch = true
@@ -19,8 +23,9 @@ resource "aws_subnet" "public_a" {
   }
 }
 
-resource "aws_subnet" "public_b" {
-  vpc_id                  = aws_vpc.main.id
+# Subnet pública na zona us-east-1b
+resource "aws_subnet" "apisub_publicb" {
+  vpc_id                  = aws_vpc.apivpc.id
   cidr_block              = "10.0.2.0/24"
   availability_zone       = "us-east-1b"
   map_public_ip_on_launch = true
@@ -29,44 +34,107 @@ resource "aws_subnet" "public_b" {
   }
 }
 
-# Internet Gateway
-resource "aws_internet_gateway" "igw" {
-  vpc_id = aws_vpc.main.id
-}
-
-# Tabela de Rotas
-resource "aws_route_table" "public" {
-  vpc_id = aws_vpc.main.id
-  route {
-    cidr_block = "0.0.0.0/0"
-    gateway_id = aws_internet_gateway.igw.id
+# Criar um Internet Gateway
+resource "aws_internet_gateway" "api_gateway" {
+  vpc_id = aws_vpc.apivpc.id
+  tags = {
+    Name = "api-gateway"
   }
 }
 
-# Associações de Tabela de Rotas
-resource "aws_route_table_association" "a" {
-  subnet_id      = aws_subnet.public_a.id
-  route_table_id = aws_route_table.public.id
+# Criar uma tabela de rotas
+resource "aws_route_table" "api_route" {
+  vpc_id = aws_vpc.apivpc.id
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = aws_internet_gateway.api_gateway.id
+  }
 }
 
-resource "aws_route_table_association" "b" {
-  subnet_id      = aws_subnet.public_b.id
-  route_table_id = aws_route_table.public.id
+# Associar a tabela de rotas às subnets
+resource "aws_route_table_association" "publica_association" {
+  subnet_id      = aws_subnet.apisub_publica.id
+  route_table_id = aws_route_table.api_route.id
 }
 
-# Repositório ECR
-resource "aws_ecr_repository" "api" {
-  name = var.ecr_repository_name
+resource "aws_route_table_association" "publicb_association" {
+  subnet_id      = aws_subnet.apisub_publicb.id
+  route_table_id = aws_route_table.api_route.id
 }
 
-# Cluster ECS
-resource "aws_ecs_cluster" "main" {
-  name = var.ecs_cluster_name
+# Criar o repositório ECR
+resource "aws_ecr_repository" "api_comment" {
+  name = "api-comment-repo"
 }
 
-# Role para ECS Task Execution
+# Criar um ALB (Application Load Balancer)
+resource "aws_lb" "api_alb" {
+  name               = "api-alb"
+  internal           = false
+  load_balancer_type = "application"
+  security_groups    = [aws_security_group.securityapi.id]
+  subnets            = [
+    aws_subnet.apisub_publica.id,
+    aws_subnet.apisub_publicb.id
+  ]
+  enable_deletion_protection = false
+  idle_timeout               = 60
+  drop_invalid_header_fields = true
+}
+
+# Criar um Listener para o ALB
+resource "aws_lb_listener" "api_listener" {
+  load_balancer_arn = aws_lb.api_alb.arn
+  port              = 80
+  protocol          = "HTTP"
+
+  default_action {
+    type = "fixed-response"
+    fixed_response {
+      content_type = "text/plain"
+      message_body = "Healthy"
+      status_code  = "200"
+    }
+  }
+}
+
+# Criar um Target Group
+resource "aws_lb_target_group" "api_target_group" {
+  name     = "api-target-group"
+  port     = 5000
+  protocol = "HTTP"
+  vpc_id   = aws_vpc.apivpc.id
+
+  health_check {
+    path                = "/"
+    interval            = 30
+    timeout             = 5
+    healthy_threshold    = 2
+    unhealthy_threshold  = 2
+  }
+}
+
+# Criar um Grupo de Segurança
+resource "aws_security_group" "securityapi" {
+  vpc_id = aws_vpc.apivpc.id
+
+  ingress {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+
+# Criar um Cluster ECS
+resource "aws_ecs_cluster" "api_comment_cluster" {
+  name = "api-comment-cluster"
+}
+
+# Criar uma Role para o ECS Task Execution
 resource "aws_iam_role" "ecs_task_execution_role" {
   name = "ecsTaskExecutionRole"
+
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -86,9 +154,9 @@ resource "aws_iam_role_policy_attachment" "ecs_task_execution_policy" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
 }
 
-# Task Definition
-resource "aws_ecs_task_definition" "api" {
-  family                   = "api-task"
+# Definir a Task Definition do ECS
+resource "aws_ecs_task_definition" "api_comment_task" {
+  family                   = "api-comment-task"
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
   cpu                      = "256"
@@ -97,15 +165,15 @@ resource "aws_ecs_task_definition" "api" {
 
   container_definitions = jsonencode([
     {
-      name      = "api"
-      image     = var.container_image
+      name      = "api_comment_service"
+      image     = "${aws_ecr_repository.api_comment.repository_url}:latest"
       cpu       = 256
       memory    = 512
       essential = true
       portMappings = [
         {
-          containerPort = var.container_port
-          hostPort      = var.container_port
+          containerPort = 5000
+          hostPort      = 5000
           protocol      = "tcp"
         }
       ]
@@ -113,90 +181,64 @@ resource "aws_ecs_task_definition" "api" {
   ])
 }
 
-# Load Balancer
-resource "aws_lb" "api" {
-  name               = "api-lb"
-  internal           = false
-  load_balancer_type = "application"
-  security_groups    = [aws_security_group.api.id]
-  subnets            = [aws_subnet.public_a.id, aws_subnet.public_b.id]
-  enable_deletion_protection = false
-  idle_timeout               = 60
-}
-
-# Listener
-resource "aws_lb_listener" "http" {
-  load_balancer_arn = aws_lb.api.arn
-  port              = 80
-  protocol          = "HTTP"
-  default_action {
-    type = "fixed-response"
-    fixed_response {
-      content_type = "text/plain"
-      message_body = "OK"
-      status_code  = "200"
-    }
-  }
-}
-
-# Target Group
-resource "aws_lb_target_group" "api" {
-  name     = "api-target-group"
-  port     = var.container_port
-  protocol = "HTTP"
-  vpc_id   = aws_vpc.main.id
-
-  health_check {
-    path                = "/"
-    interval            = 30
-    timeout             = 5
-    healthy_threshold   = 2
-    unhealthy_threshold = 2
-  }
-}
-
-# Security Group
-resource "aws_security_group" "api" {
-  vpc_id = aws_vpc.main.id
-
-  ingress {
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-}
-
-# ECS Service
-resource "aws_ecs_service" "api" {
-  name            = var.ecs_service_name
-  cluster         = aws_ecs_cluster.main.id
-  task_definition = aws_ecs_task_definition.api.arn
-  desired_count   = var.desired_count
+# Criar o Serviço ECS
+resource "aws_ecs_service" "api_comment_service" {
+  name            = "api_comment_service"
+  cluster         = aws_ecs_cluster.api_comment_cluster.id
+  task_definition = aws_ecs_task_definition.api_comment_task.arn
+  desired_count   = 1  
   launch_type     = "FARGATE"
+
   network_configuration {
-    subnets          = [aws_subnet.public_a.id, aws_subnet.public_b.id]
-    security_groups  = [aws_security_group.api.id]
+    subnets          = [aws_subnet.apisub_publica.id, aws_subnet.apisub_publicb.id]
+    security_groups  = [aws_security_group.securityapi.id]
     assign_public_ip = true
   }
+
   load_balancer {
-    target_group_arn = aws_lb_target_group.api.arn
-    container_name   = "api"
-    container_port   = var.container_port
+    target_group_arn = aws_lb_target_group.api_target_group.arn
+    container_name   = "api_comment_service"
+    container_port   = 5000
   }
+
   deployment_controller {
     type = "ECS"
   }
 }
 
-# CloudWatch Logs
-resource "aws_cloudwatch_log_group" "api" {
-  name = "/ecs/api"
+# Criar métricas e alarmes CloudWatch para CPU e disponibilidade
+resource "aws_cloudwatch_metric_alarm" "high_cpu_utilization" {
+  alarm_name                = "high-cpu-utilization"
+  comparison_operator       = "GreaterThanThreshold"
+  evaluation_periods        = 1
+  metric_name               = "CPUUtilization"
+  namespace                 = "AWS/ECS"
+  period                    = 60
+  statistic                 = "Average"
+  threshold                 = 80
+
+  dimensions = {
+    ClusterName = aws_ecs_cluster.api_comment_cluster.name
+    ServiceName = aws_ecs_service.api_comment_service.name
+  }
+
+  alarm_description = "Alarm when CPU utilization exceeds 80%"
+}
+
+resource "aws_cloudwatch_metric_alarm" "api_availability" {
+  alarm_name                = "api-availability"
+  comparison_operator       = "LessThanThreshold"
+  evaluation_periods        = 2
+  metric_name               = "UnhealthyHostCount"
+  namespace                 = "AWS/ApplicationELB"
+  period                    = 60
+  statistic                 = "Sum"
+  threshold                 = 1
+
+  dimensions = {
+    TargetGroup = aws_lb_target_group.api_target_group.name
+    LoadBalancer = aws_lb.api_alb.name
+  }
+
+  alarm_description = "Alarm when the number of unhealthy hosts exceeds 1"
 }
