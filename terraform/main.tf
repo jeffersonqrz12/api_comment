@@ -145,7 +145,7 @@ resource "aws_ecs_service" "mapi_comment-service" {
 
   load_balancer {
     target_group_arn = aws_lb_target_group.api_target_group.arn
-    container_name   = "api-comment"
+    container_name   = "api_coment-service"
     container_port   = 3000
   }
 
