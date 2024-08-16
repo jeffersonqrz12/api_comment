@@ -15,7 +15,7 @@ variable "ecs_service_name" {
 
 # Variável para o nome do repositório ECR
 variable "ecr_repository_name" {
-  description = "api_comment"
+  description = "api_comment-repo"
 }
 
 
