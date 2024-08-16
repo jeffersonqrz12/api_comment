@@ -20,6 +20,26 @@ resource "aws_subnet" "apisub_publicb" {
   map_public_ip_on_launch = true
 }
 
+resource "aws_internet_gateway" "api-gateway" {
+  vpc_id = aws_vpc.apivpc.id
+}
+
+resource "aws_route_table" "api-route" {
+  vpc_id = aws_vpc.apivpc.id
+
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = aws_internet_gateway.api-gateway.id
+  }
+
+
+}
+
+resource "aws_route_table_association" "example" {
+  subnet_id      = aws_subnet.apisub_publica.id
+  route_table_id = aws_route_table.example.id
+}
+
 #grupo de segurança
 resource "aws_security_group" "securityapi" {
   vpc_id = aws_vpc.apivpc.id
