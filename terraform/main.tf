@@ -56,8 +56,8 @@ resource "aws_security_group" "securityapi" {
 vpc_id = aws_vpc.apivpc.id
 }
 
-resource "aws_ecr_repository" "api-comment" {
-name = var.ecr_repository_name
+resource "aws_ecr_repository" "api_comment-repo" {
+  name = var.ecr_repository_name
 }
 
 
@@ -152,7 +152,7 @@ resource "aws_ecs_task_definition" "api_comment_task" {
   container_definitions = jsonencode([
     {
       name      = "api_comment-service"
-      image     = "${aws_ecr_repository.api_comment.repository_url}:latest"
+      image     = "${aws_ecr_repository.api_comment-repo.repository_url}:latest"
       cpu       = 256
       memory    = 512
       essential = true
