@@ -3,41 +3,67 @@ resource "aws_vpc" "apivpc" {
   cidr_block = "10.0.0.0/16"
   enable_dns_support = true
   enable_dns_hostnames = true
+
+  tags = {
+    Name = "my-vpc"
+  }
 }
 
-# subnet pública
+# Subnet pública na zona us-east-1a
 resource "aws_subnet" "apisub_publica" {
-  vpc_id     = aws_vpc.apivpc.id
-  cidr_block = "10.0.1.0/24"
-  availability_zone = "us-east-1a"  
+  vpc_id                  = aws_vpc.apivpc.id
+  cidr_block              = "10.0.1.0/24"
+  availability_zone       = "us-east-1a"
   map_public_ip_on_launch = true
+
+  tags = {
+    Name = "public-subnet-a"
+  }
 }
 
+# Subnet pública na zona us-east-1b
 resource "aws_subnet" "apisub_publicb" {
   vpc_id                  = aws_vpc.apivpc.id
   cidr_block              = "10.0.2.0/24"
-  availability_zone       = "us-east-1b"  # Substitua por uma zona válida
+  availability_zone       = "us-east-1b"
   map_public_ip_on_launch = true
+
+  tags = {
+    Name = "public-subnet-b"
+  }
 }
 
-resource "aws_internet_gateway" "api-gateway" {
+# Criar um Internet Gateway
+resource "aws_internet_gateway" "api_gateway" {
   vpc_id = aws_vpc.apivpc.id
+
+  tags = {
+    Name = "api-gateway"
+  }
 }
 
-resource "aws_route_table" "api-route" {
+# Criar uma tabela de rotas
+resource "aws_route_table" "api_route" {
   vpc_id = aws_vpc.apivpc.id
 
   route {
     cidr_block = "0.0.0.0/0"
-    gateway_id = aws_internet_gateway.api-gateway.id
+    gateway_id = aws_internet_gateway.api_gateway.id
   }
 
 
 }
 
-resource "aws_route_table_association" "example" {
+# Associar a tabela de rotas à subnet pública apisub_publica
+resource "aws_route_table_association" "publica_association" {
   subnet_id      = aws_subnet.apisub_publica.id
-  route_table_id = aws_route_table.example.id
+  route_table_id = aws_route_table.api_route.id
+}
+
+# Associar a tabela de rotas à subnet pública apisub_publicb
+resource "aws_route_table_association" "publicb_association" {
+  subnet_id      = aws_subnet.apisub_publicb.id
+  route_table_id = aws_route_table.api_route.id
 }
 
 #grupo de segurança
