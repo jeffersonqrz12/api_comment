@@ -129,8 +129,8 @@ resource "aws_ecs_cluster" "api_comment-cluster" {
 }
 
 
-resource "aws_ecs_service" "mapi_comment-service" {
-  name            = api_coment-service
+resource "aws_ecs_service" "api_comment-service" {
+  name            = "api_coment-service"
   cluster         = aws_ecs_cluster.api_comment-cluster.id
   task_definition = aws_ecs_task_definition.api-comment-task.arn
   desired_count   = 1  
@@ -145,7 +145,7 @@ resource "aws_ecs_service" "mapi_comment-service" {
 
   load_balancer {
     target_group_arn = aws_lb_target_group.api_target_group.arn
-    container_name   = "api_coment-service"
+    container_name   = "api_comment-service"
     container_port   = 3000
   }
 
@@ -205,7 +205,7 @@ execution_role_arn = aws_iam_role.ecs_task_execution_role.arn
 
   container_definitions = jsonencode([
     {
-      name      = "api_coment-service"
+      name      = "api_comment-service"
       image     = "${aws_ecr_repository.api-comment.repository_url}:latest"
       cpu       = 256
       memory    = 512
