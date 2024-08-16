@@ -91,8 +91,8 @@ resource "aws_cloudwatch_log_group" "apicomment_logs" {
 }
 
 # Configuração da Task Definition ECS
-resource "aws_ecs_task_definition" "apicomment_task" {
-  family                   = "apicomment-task"
+resource "aws_ecs_task_definition" "apicommenttask" {
+  family                   = "apicommenttask"
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
   cpu                      = "256"
