@@ -130,7 +130,7 @@ resource "aws_ecs_cluster" "api_comment-cluster" {
 
 
 resource "aws_ecs_service" "api_comment-service" {
-  name            = "api_coment-service"
+  name            = "api_comment-service"
   cluster         = aws_ecs_cluster.api_comment-cluster.id
   task_definition = aws_ecs_task_definition.api-comment-task.arn
   desired_count   = 1  
