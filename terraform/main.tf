@@ -15,7 +15,7 @@ resource "aws_subnet" "apisub_publica" {
 
 resource "aws_subnet" "apisub_publicb" {
   vpc_id                  = aws_vpc.apivpc.id
-  cidr_block              = "10.0.1.0/24"
+  cidr_block              = "10.0.2.0/24"
   availability_zone       = "us-east-1b"  # Substitua por uma zona válida
   map_public_ip_on_launch = true
 }
