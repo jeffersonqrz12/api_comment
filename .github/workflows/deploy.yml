@@ -40,6 +40,12 @@ jobs:
       run: terraform apply -auto-approve
       working-directory: terraform
 
+    - name: Check Terraform Apply result and Destroy if failed
+      if: failure()
+      run: |
+        echo "Terraform Apply failed, destroying infrastructure..."
+        terraform destroy -auto-approve
+
     - name: Log in to Amazon ECR
       uses: aws-actions/amazon-ecr-login@v1
       with:
