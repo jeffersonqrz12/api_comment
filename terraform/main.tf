@@ -191,14 +191,20 @@ resource "aws_ecs_service" "api_comment_service" {
     assign_public_ip = true
   }
 
-  load_balancer {
-    target_group_arn = aws_lb_target_group.api_target_group.arn
-    container_name   = "api_comment_service"
-    container_port   = 5000
-  }
+  resource "aws_lb_target_group" "api_target_group" {
+  name     = "api-target-group"
+  port     = 5000
+  protocol = "HTTP"
+  vpc_id   = aws_vpc.apivpc.id
 
-  deployment_controller {
-    type = "ECS"
+  target_type = "ip"  # Altere para "ip"
+
+  health_check {
+    path                = "/"
+    interval            = 30
+    timeout             = 5
+    healthy_threshold    = 2
+    unhealthy_threshold  = 2
   }
 }
 
