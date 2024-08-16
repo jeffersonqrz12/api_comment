@@ -32,7 +32,7 @@ jobs:
 
     - name: Build Docker image
       run: |
-        docker build -t myapp .
+        docker build -t myapp /app/
         docker tag myapp:latest ${{ secrets.ECR_REPOSITORY }}:latest
 
     - name: Push Docker image
