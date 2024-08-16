@@ -190,7 +190,7 @@ resource "aws_ecs_service" "api_comment_service" {
     security_groups  = [aws_security_group.securityapi.id]
     assign_public_ip = true
   }
-
+}
   resource "aws_lb_target_group" "api_target_group" {
   name     = "api-target-group"
   port     = 5000
