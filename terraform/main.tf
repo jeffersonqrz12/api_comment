@@ -191,7 +191,7 @@ resource "aws_ecs_service" "api_comment_service" {
     assign_public_ip = true
   }
 }
-  resource "aws_lb_target_group" "api_target_group" {
+  resource "aws_lb_target_group" "api_lb_target_group" {
   name     = "api-target-group"
   port     = 5000
   protocol = "HTTP"
