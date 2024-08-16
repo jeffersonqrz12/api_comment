@@ -1,6 +1,6 @@
 provider "aws" {
   region = var.region
-}
+} 
 
 # Criar VPC
 resource "aws_vpc" "main" {
