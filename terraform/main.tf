@@ -13,6 +13,13 @@ resource "aws_subnet" "apisub_publica" {
   map_public_ip_on_launch = true
 }
 
+resource "aws_subnet" "apisub_publicb" {
+  vpc_id                  = aws_vpc.apivpc.id
+  cidr_block              = "10.0.1.0/24"
+  availability_zone       = "us-east-1b"  # Substitua por uma zona válida
+  map_public_ip_on_launch = true
+}
+
 #grupo de segurança
 resource "aws_security_group" "securityapi" {
   vpc_id = aws_vpc.apivpc.id
@@ -42,6 +49,7 @@ resource "aws_lb" "api_alb" {
   load_balancer_type = "application"
   security_groups    = [aws_security_group.securityapi.id]
   subnets            = [aws_subnet.apisub_publica.id]
+  subnets            = [aws_subnet.apisub_publicb.id]
 
   enable_deletion_protection = false
   idle_timeout               = 60
