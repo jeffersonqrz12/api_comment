@@ -44,5 +44,6 @@ jobs:
         aws ecs update-service \
           --cluster ${{ secrets.ECS_CLUSTER_NAME }} \
           --service ${{ secrets.ECS_SERVICE_NAME }} \
-          --force-new-deployment \
           --task-definition ${{ secrets.ECS_TASK_DEFINITION }}
+          --force-new-deployment \
+          
