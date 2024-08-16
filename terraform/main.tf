@@ -32,7 +32,7 @@ resource "aws_security_group" "securityapi" {
   }
 }
 
-resource "aws_ecr_repository" "repo-comment" {
+resource "aws_ecr_repository" "api-comment" {
 name = var.ecr_repository_name
 }
 #Application Load Balancer (ALB)
@@ -81,7 +81,7 @@ resource "aws_lb_target_group" "api_target_group" {
 }
 
 # Configuração do Cluster ECS
-resource "aws_ecs_cluster" "apicomment_cluster" {
+resource "aws_ecs_cluster" "api_comment_cluster" {
   name = var.ecs_cluster_name
 }
 
@@ -91,8 +91,8 @@ resource "aws_cloudwatch_log_group" "apicomment_logs" {
 }
 
 # Configuração da Task Definition ECS
-resource "aws_ecs_task_definition" "apicommenttask" {
-  family                   = "apicommenttask"
+resource "aws_ecs_task_definition" "api-comment-task" {
+  family                   = "api-comment-task"
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
   cpu                      = "256"
