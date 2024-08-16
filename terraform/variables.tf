@@ -13,7 +13,10 @@ variable "ecs_service_name" {
   default     = "api_coment-service"
 }
 
+
+# Variável para o nome do repositório ECR
 variable "ecr_repository_name" {
-  description = "ECR repository name"
-  default     = "api-comment"
+  description = "Nome do repositório ECR"
+  type        = string
 }
+
