@@ -48,8 +48,9 @@ resource "aws_lb" "api_alb" {
   internal           = false
   load_balancer_type = "application"
   security_groups    = [aws_security_group.securityapi.id]
-  subnets            = [aws_subnet.apisub_publica.id]
-  subnets            = [aws_subnet.apisub_publicb.id]
+  subnets            = [
+    aws_subnet.apisub_publica.id,
+    aws_subnet.apisub_publicb.id]
 
   enable_deletion_protection = false
   idle_timeout               = 60
