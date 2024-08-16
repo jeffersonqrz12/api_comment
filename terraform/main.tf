@@ -1,7 +1,3 @@
-provider "aws" {
-  region = "us-east-1"
-}
-
 # Criar uma VPC
 resource "aws_vpc" "apivpc" {
   cidr_block = "10.0.0.0/16"
