@@ -80,23 +80,28 @@ resource "aws_lb_target_group" "api_target_group" {
   }
 }
 
-resource "aws_ecs_cluster" 'apicomment-cluster" {
+# Configuração do Cluster ECS
+resource "aws_ecs_cluster" "apicomment_cluster" {
   name = var.ecs_cluster_name
 }
 
+# Configuração do Grupo de Logs para a Task Definition
+resource "aws_cloudwatch_log_group" "apicomment_logs" {
+  name = "/ecs/api-comment"
+}
 
-
-resource "aws_ecs_task_definition" "apicomment-task" {
-  family                = "apicomment-task"
-  network_mode          = "awsvpc"
+# Configuração da Task Definition ECS
+resource "aws_ecs_task_definition" "apicomment_task" {
+  family                   = "apicomment-task"
+  network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
-  cpu                   = "256"
-  memory                = "512"
+  cpu                      = "256"
+  memory                   = "512"
 
   container_definitions = jsonencode([
     {
       name      = "apicomment-container"
-      image     = "${aws_ecr_repository.repo-comment.repository_url}:latest"  
+      image     = "${aws_ecr_repository.api-comment.repository_url}:latest"
       cpu       = 256
       memory    = 512
       essential = true
@@ -110,14 +115,15 @@ resource "aws_ecs_task_definition" "apicomment-task" {
       logConfiguration = {
         logDriver = "awslogs"
         options = {
-          awslogs-group         = "/ecs/api-comment"
+          awslogs-group         = aws_cloudwatch_log_group.apicomment_logs.name
           awslogs-region        = var.aws_region
           awslogs-stream-prefix = "ecs"
         }
       }
     }
-  ]
+  ])
 }
+    
 
 
 resource "aws_ecs_service" "apicomment-serv" {
