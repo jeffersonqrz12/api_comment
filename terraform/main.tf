@@ -88,6 +88,8 @@ resource "aws_security_group" "securityapi" {
 resource "aws_ecr_repository" "api-comment" {
 name = var.ecr_repository_name
 }
+
+
 #Application Load Balancer (ALB)
 resource "aws_lb" "api_alb" {
   name               = "api-alb"
@@ -119,6 +121,39 @@ resource "aws_lb_listener" "api_listener" {
   }
 }
 
+
+
+# Configuração do Cluster ECS
+resource "aws_ecs_cluster" "api_comment-cluster" {
+  name = var.ecs_cluster_name
+}
+
+
+resource "aws_ecs_service" "mapi_comment-service" {
+  name            = var.ecs_service_name
+  cluster         = aws_ecs_cluster.api_comment-cluster.id
+  task_definition = aws_ecs_task_definition.api-comment-task.arn
+  desired_count   = 1  
+  launch_type     = "FARGATE"
+
+  network_configuration {
+    subnets          = [aws_subnet.apisub_publica.id]
+    security_groups  = [aws_security_group.securityapi.id]
+    assign_public_ip = true
+  }
+
+
+  load_balancer {
+    target_group_arn = aws_lb_target_group.api_target_group.arn
+    container_name   = "api-comment"
+    container_port   = 3000
+  }
+
+  deployment_controller {
+    type = "ECS"
+  }
+}
+
 # Criar um Target Group
 resource "aws_lb_target_group" "api_target_group" {
   name     = "api-target-group"
@@ -135,14 +170,27 @@ resource "aws_lb_target_group" "api_target_group" {
   }
 }
 
-# Configuração do Cluster ECS
-resource "aws_ecs_cluster" "api_comment-cluster" {
-  name = var.ecs_cluster_name
+# Role e Policy para ECS
+resource "aws_iam_role" "ecs_task_execution_role" {
+  name = "ecsTaskExecutionRole"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = "sts:AssumeRole"
+        Effect = "Allow"
+        Principal = {
+          Service = "ecs-tasks.amazonaws.com"
+        }
+      }
+    ]
+  })
 }
 
-# Configuração do Grupo de Logs para a Task Definition
-resource "aws_cloudwatch_log_group" "apicomment_logs" {
-  name = "/ecs/api-comment"
+resource "aws_iam_role_policy_attachment" "ecs_task_execution_policy" {
+  role      = aws_iam_role.ecs_task_execution_role.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
 }
 
 # Configuração da Task Definition ECS
@@ -178,32 +226,10 @@ resource "aws_ecs_task_definition" "api-comment-task" {
     }
   ])
 }
-    
 
-
-resource "aws_ecs_service" "mapi_comment-service" {
-  name            = var.ecs_service_name
-  cluster         = aws_ecs_cluster.api_comment-cluster.id
-  task_definition = aws_ecs_task_definition.api-comment-task.arn
-  desired_count   = 1  
-  launch_type     = "FARGATE"
-
-  network_configuration {
-    subnets          = [aws_subnet.apisub_publica.id]
-    security_groups  = [aws_security_group.securityapi.id]
-    assign_public_ip = true
-  }
-
-
-  load_balancer {
-    target_group_arn = aws_lb_target_group.api_target_group.arn
-    container_name   = "api-comment"
-    container_port   = 3000
-  }
-
-  deployment_controller {
-    type = "ECS"
-  }
+# Configuração do Grupo de Logs para a Task Definition
+resource "aws_cloudwatch_log_group" "apicomment_logs" {
+  name = "/ecs/api-comment"
 }
 
 resource "aws_cloudwatch_log_group" "apicommentlog" {
