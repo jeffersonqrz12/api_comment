@@ -1,7 +1,3 @@
-provider "aws" {
-  region = var.region
-} 
-
 # Criar VPC
 resource "aws_vpc" "main" {
   cidr_block = "10.0.0.0/16"
