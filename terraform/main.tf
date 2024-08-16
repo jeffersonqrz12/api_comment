@@ -41,7 +41,7 @@ resource "aws_lb" "api_alb" {
   internal           = false
   load_balancer_type = "application"
   security_groups    = [aws_security_group.securityapi.id]
-  subnets            = [aws_subnet.pisub_publica.id]
+  subnets            = [aws_subnet.apisub_publica.id]
 
   enable_deletion_protection = false
   idle_timeout               = 60
@@ -81,7 +81,7 @@ resource "aws_lb_target_group" "api_target_group" {
 }
 
 # Configuração do Cluster ECS
-resource "aws_ecs_cluster" "api_comment_cluster" {
+resource "aws_ecs_cluster" "api_comment-cluster" {
   name = var.ecs_cluster_name
 }
 
@@ -126,7 +126,7 @@ resource "aws_ecs_task_definition" "api-comment-task" {
     
 
 
-resource "aws_ecs_service" "apicomment-serv" {
+resource "aws_ecs_service" "mapi_comment-service" {
   name            = var.ecs_service_name
   cluster         = aws_ecs_cluster.api_comment-cluster.id
   task_definition = aws_ecs_task_definition.api-comment-task.arn
