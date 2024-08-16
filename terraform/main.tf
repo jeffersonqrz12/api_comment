@@ -86,7 +86,7 @@ resource "aws_ecs_cluster" 'apicomment-cluster" {
 
 
 
-resource "aws_ecs_task_definition" "apicomment.task" {
+resource "aws_ecs_task_definition" "apicomment-task" {
   family                = "apicomment-task"
   network_mode          = "awsvpc"
   requires_compatibilities = ["FARGATE"]
