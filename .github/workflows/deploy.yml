@@ -39,11 +39,15 @@ jobs:
       run: |
         docker push ${{ secrets.ECR_REPOSITORY }}:latest
 
+    - name: Create Task Definition
+      run: |
+        aws ecs register-task-definition \
+          --task-definition ${{ secrets.ECS_TASK_DEFINITION }}
+
     - name: Update ECS service
       run: |
         aws ecs update-service \
           --cluster ${{ secrets.ECS_CLUSTER_NAME }} \
           --service ${{ secrets.ECS_SERVICE_NAME }} \
-          --task-definition ${{ secrets.ECS_TASK_DEFINITION }}
           --force-new-deployment \
           
