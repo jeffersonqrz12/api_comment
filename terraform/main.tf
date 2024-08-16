@@ -134,7 +134,7 @@ resource "aws_ecs_service" "mapi_comment-service" {
   launch_type     = "FARGATE"
 
   network_configuration {
-    subnets          = [aws_subnet.apisub_public.id]
+    subnets          = [aws_subnet.apisub_publica.id]
     security_groups  = [aws_security_group.securityapi.id]
     assign_public_ip = true
   }
