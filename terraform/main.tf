@@ -134,10 +134,39 @@ resource "aws_ecs_service" "mapi_comment-service" {
   launch_type     = "FARGATE"
 
   network_configuration {
-    subnets          = [aws_subnet.apisub_publica.id]
+    subnets          = [aws_subnet.apisub_public.id]
     security_groups  = [aws_security_group.securityapi.id]
     assign_public_ip = true
   }
+}
+
+resource "aws_appautoscaling_target" "ecs_service_target" {
+  max_capacity       = 10
+  min_capacity       = 1
+  resource_id        = "service/${aws_ecs_cluster.api_comment-cluster.name}/${aws_ecs_service.mapi_comment-service.name}"
+  scalable_dimension = "ecs:service:DesiredCount"
+  service_namespace  = "ecs"
+}
+
+resource "aws_appautoscaling_policy" "ecs_service_policy" {
+  name                   = "scale-out"
+  policy_type            = "StepScaling"
+  scaling_target         = aws_appautoscaling_target.ecs_service_target.id
+  step_scaling_policy_configuration {
+    adjustment_type = "ChangeInCapacity"
+    cooldown        = 60
+
+    step_adjustment {
+      scaling_adjustment = 1
+      metric_interval_upper_bound = "50"
+    }
+
+    step_adjustment {
+      scaling_adjustment = 2
+      metric_interval_lower_bound = "50"
+    }
+  }
+}
 
   load_balancer {
     target_group_arn = aws_lb_target_group.api_target_group.arn
