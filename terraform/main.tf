@@ -205,7 +205,7 @@ execution_role_arn = aws_iam_role.ecs_task_execution_role.arn
 
   container_definitions = jsonencode([
     {
-      name      = "apicomment-container"
+      name      = "api_coment-service"
       image     = "${aws_ecr_repository.api-comment.repository_url}:latest"
       cpu       = 256
       memory    = 512
