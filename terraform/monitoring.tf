@@ -11,7 +11,7 @@ resource "aws_cloudwatch_metric_alarm" "cpu_utilization" {
 
   dimensions = {
     ClusterName = aws_ecs_cluster.api_comment-cluster.name
-    ServiceName = aws_ecs_service.mapi_comment-service.name
+    ServiceName = aws_ecs_service.api_comment-service.name.name
   }
 
   alarm_actions = ["arn:aws:sns:us-east-1:927420173806:teste.fifo"]
