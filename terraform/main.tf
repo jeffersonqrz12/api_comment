@@ -34,7 +34,7 @@ resource "aws_security_group" "securityapi" {
 
 resource "aws_ecr_repository" "repo-comment" {
 name = var.ecr_repository_name
-
+}
 #Application Load Balancer (ALB)
 resource "aws_lb" "api_alb" {
   name               = "api-alb"
