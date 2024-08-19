@@ -7,7 +7,7 @@ resource "aws_launch_configuration" "ecs_launch_config" {
   key_name              = "mytestekey
 }
 
-
+ 
 resource "aws_autoscaling_group" "ecs_asg" {
   name                 = "asg_terraform_ecs_lab"
   launch_configuration = aws_launch_configuration.ecs_launch_config.id
