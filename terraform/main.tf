@@ -8,7 +8,6 @@ module "vpc" {
 
 module "ecr" {
   source          = "./modules/ecr"
-  repository_name = "my-app-repo"
 }
 
 module "ecs" {
