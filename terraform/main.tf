@@ -3,16 +3,16 @@ provider "aws" {
 }
 
 module "vpc" {
-  source = "./modules/vpc/main.tf"
+  source = "./modules/vpc"
 }
 
 module "ecr" {
-  source          = "./modules/ecr/main.tf"
+  source          = "./modules/ecr"
   repository_name = "my-app-repo"
 }
 
 module "ecs" {
-  source              = "./modules/ecs/main.tf"
+  source              = "./modules/ecs"
   ecr_repository_url  = module.ecr.repository_url
   vpc_id              = module.vpc.vpc_id
   subnet_id           = module.vpc.public_subnet_id
