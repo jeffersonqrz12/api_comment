@@ -2,7 +2,8 @@ IaC - Infrastructure as Code 🚧 Deploy da API na AWS com Terraform
 
 💻 Sobre o Projeto
 
-Este projeto usa Terraform para montar a infraestrutura na AWS para a API api_comment. A configuração cobre tudo, desde a criação de uma VPC e subnets públicas, até o setup de um Internet Gateway, um Application Load Balancer (ALB), um repositório ECR e um cluster ECS. Além disso, tudo é monitorado com CloudWatch. E adivinha? O deploy é automatizado com GitHub Actions, aplicando conceitos de Cloud Native para uma estrutura moderna e escalável.
+Este projeto usa Terraform para montar a infraestrutura na AWS para a API api_comment. A configuração cobre tudo, desde a criação de uma VPC e subnets públicas, até o setup de um Internet Gateway, um Application Load Balancer (ALB), um repositório ECR e um cluster ECS. Além disso, tudo é monitorado com CloudWatch.
+
 
 💪 Funcionalidades
 
@@ -19,19 +20,19 @@ Este projeto usa Terraform para montar a infraestrutura na AWS para a API api_co
 🛠 Pré-requisitos
 
     Git: Para clonar o repositório.
+    
     Terraform: Para criar e gerenciar a infraestrutura.
 
 🎲 Instalação
 
     Clone o repositório
 
-    bash
 
 git clone https://github.com/jeffersonqrz12/api_comment.git
 
 Entre na pasta do projeto
 
-bash
+
 
     cd api_comment/terraform
 
@@ -39,19 +40,19 @@ bash
 
     Inicialize o Terraform
 
-    bash
+  
 
 terraform init
 
 Veja o plano de execução
 
-bash
+
 
 terraform plan
 
 Aplique as mudanças
 
-bash
+
 
     terraform apply --auto-approve
 
