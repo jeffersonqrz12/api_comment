@@ -1,37 +1,62 @@
-IaC - Infraestructure as Code
-🚧  Deploy de um api  na AWS com Terraform
+IaC - Infrastructure as Code 🚧 Deploy da API na AWS com Terraform
 
-💻 Sobre o projeto
-Provisionar uma infraestrutura na AWS com Terraform
+💻 Sobre o Projeto
+
+Este projeto usa Terraform para montar a infraestrutura na AWS para a API api_comment. A configuração cobre tudo, desde a criação de uma VPC e subnets públicas, até o setup de um Internet Gateway, um Application Load Balancer (ALB), um repositório ECR e um cluster ECS. Além disso, tudo é monitorado com CloudWatch. E adivinha? O deploy é automatizado com GitHub Actions, aplicando conceitos de Cloud Native para uma estrutura moderna e escalável.
 
 💪 Funcionalidades
- Cria EC2
- Cria Security Groups
- Configura as instâncias através de script no user-data 
 
+    Cria VPC: Monta uma Virtual Private Cloud com subnets públicas.
+    Cria Subnets: Define subnets públicas em zonas diferentes.
+    Cria Internet Gateway: Dá acesso à Internet para a VPC.
+    Cria Tabela de Rotas: Configura o tráfego externo para o Internet Gateway.
+    Cria ECR Repository: Prepara um repositório no Amazon Elastic Container Registry para as imagens Docker.
+    Cria ALB: Configura um Application Load Balancer para distribuir o tráfego.
+    Cria Security Groups: Define regras de segurança para as instâncias.
+    Cria ECS Cluster e Serviço: Prepara um cluster ECS e um serviço para rodar a API.
+    Métricas e Alarmes CloudWatch: Monitora o uso da CPU e a disponibilidade da API.
 
 🛠 Pré-requisitos
-Git e Terraform 
 
+    Git: Para clonar o repositório.
+    Terraform: Para criar e gerenciar a infraestrutura.
 
 🎲 Instalação
-# Clone este repositório
-https://github.com/jeffersonqrz12/api_comment.git
 
-# Acesse a pasta do projeto no terminal/cmd
-$ cd api_comment
+    Clone o repositório
 
+    bash
+
+git clone https://github.com/jeffersonqrz12/api_comment.git
+
+Entre na pasta do projeto
+
+bash
+
+    cd api_comment/terraform
 
 🚀 Deploy
 
+    Inicialize o Terraform
 
-# init
-$ terraform init
+    bash
 
-# Plan
-$ terraform plan
+terraform init
 
-# Apply com confirmação
-$ terraform apply --auto-approve
+Veja o plano de execução
 
-# Obs: Os recursos serão provisionados em us-east-1
+bash
+
+terraform plan
+
+Aplique as mudanças
+
+bash
+
+    terraform apply --auto-approve
+
+    Obs: Os recursos serão criados na região us-east-1.
+
+🔧 Automação com GitHub Actions
+
+Tudo é automatizado com GitHub Actions. Sempre que há uma atualização no repositório, o GitHub Actions executa os comandos Terraform automaticamente, garantindo que sua infraestrutura esteja sempre em dia.
